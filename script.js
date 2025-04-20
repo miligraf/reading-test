@@ -10,7 +10,7 @@ const questionPool = [
       {
         passage: "Lena has a pet rabbit. The rabbit has soft white fur and long ears. It hops around the yard every morning.",
         prompt: "What word tells how Lena's rabbit looks?",
-        options: ["hops", "ears", "soft"],
+        options: ["hops", "nose", "soft"],
         answerIndex: 2
       }
     ],
@@ -115,13 +115,15 @@ const questionPool = [
         passage: "<strong>Birds</strong><br>Birds use their feathered wings to fly.<br>They build nests and lay eggs.<br><br><strong>Bats</strong><br>Bats fly at night to hunt for food.<br>They have fur.<br>Some bats hang in trees.",
         prompt: "Move each detail to the correct part of the Venn Diagram to show how birds and bats are alike and different.",
         type: "venn",
-        options: ["lay eggs", "fly", "hang in trees", "have fur"]
+        options: ["lay eggs", "fly", "hang in trees", "have fur"],
+        vennLabels: ["Only birds", "Both birds and bats", "Only bats"]
       },
       {
         passage: "<strong>Frogs</strong><br>Frogs lay eggs and hop.<br>They have smooth skin.<br><br><strong>Toads</strong><br>Toads hop too.<br>They have bumpy skin.<br>Toads also lay eggs.",
         prompt: "Move each detail to the correct part of the Venn Diagram to show how frogs and toads are alike and different.",
         type: "venn",
-        options: ["lay eggs", "bumpy skin", "smooth skin", "hop"]
+        options: ["lay eggs", "bumpy skin", "smooth skin", "hop"],
+        vennLabels: ["Only frogs", "Both frogs and toads", "Only toads"]
       }
     ],
   
@@ -236,53 +238,57 @@ const questionPool = [
   
     // VENN DIAGRAM
     if (q.type === "venn") {
-      const labels = document.createElement("div");
-      labels.className = "venn-labels";
-      q.options.forEach(label => {
-        const item = document.createElement("div");
-        item.className = "venn-label";
-        item.textContent = label;
-        item.draggable = true;
-        item.ondragstart = e => e.dataTransfer.setData("text/plain", label);
-        labels.appendChild(item);
-      });
-  
-      const venn = document.createElement("div");
-      venn.className = "venn-container";
-      ["Only birds", "Both birds and bats", "Only bats"].forEach(zoneName => {
-        const zone = document.createElement("div");
-        zone.className = "venn-zone";
-        zone.dataset.zone = zoneName;
-        zone.ondragover = e => e.preventDefault();
-        zone.ondrop = e => {
-          e.preventDefault();
-          const text = e.dataTransfer.getData("text/plain");
-          if (!text) return;
-          const existing = Array.from(labels.children).find(el => el.textContent === text);
-          if (existing) existing.remove();
-  
-          const dropped = document.createElement("div");
-          dropped.className = "venn-label";
-          dropped.textContent = text;
-          zone.appendChild(dropped);
-        };
-        zone.innerHTML = `<strong>${zoneName}</strong>`;
-        venn.appendChild(zone);
-      });
-  
-      section.appendChild(labels);
-      section.appendChild(venn);
-  
-      const nextButton = document.createElement("button");
-      nextButton.id = "next-button";
-      nextButton.textContent = "Next";
-      nextButton.onclick = () => handleAnswer(null);
-      section.appendChild(nextButton);
-  
-      container.appendChild(section);
-      progressDisplay.textContent = `${index + 1}/${questions.length}`;
-      return;
-    }
+        const labels = document.createElement("div");
+        labels.className = "venn-labels";
+        q.options.forEach(label => {
+          const item = document.createElement("div");
+          item.className = "venn-label";
+          item.textContent = label;
+          item.draggable = true;
+          item.ondragstart = e => e.dataTransfer.setData("text/plain", label);
+          labels.appendChild(item);
+        });
+      
+        const venn = document.createElement("div");
+        venn.className = "venn-container";
+      
+        const vennLabels = q.vennLabels || ["Only birds", "Both birds and bats", "Only bats"];
+      
+        vennLabels.forEach(zoneName => {
+          const zone = document.createElement("div");
+          zone.className = "venn-zone";
+          zone.dataset.zone = zoneName;
+          zone.ondragover = e => e.preventDefault();
+          zone.ondrop = e => {
+            e.preventDefault();
+            const text = e.dataTransfer.getData("text/plain");
+            if (!text) return;
+            const existing = Array.from(labels.children).find(el => el.textContent === text);
+            if (existing) existing.remove();
+      
+            const dropped = document.createElement("div");
+            dropped.className = "venn-label";
+            dropped.textContent = text;
+            zone.appendChild(dropped);
+          };
+          zone.innerHTML = `<strong>${zoneName}</strong>`;
+          venn.appendChild(zone);
+        });
+      
+        section.appendChild(labels);
+        section.appendChild(venn);
+      
+        const nextButton = document.createElement("button");
+        nextButton.id = "next-button";
+        nextButton.textContent = "Next";
+        nextButton.onclick = () => handleAnswer(null);
+        section.appendChild(nextButton);
+      
+        container.appendChild(section);
+        progressDisplay.textContent = `${index + 1}/${questions.length}`;
+        return;
+      }
+      
   
     // MULTIPLE CHOICE
     const answerBlock = document.createElement("div");
