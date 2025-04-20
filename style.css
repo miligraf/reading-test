@@ -15,15 +15,11 @@ body {
     font-size: 16px;
   }
   
-  header .title {
+  .title {
     font-weight: bold;
   }
   
-  header .progress {
-    flex: 0 0 auto;
-  }
-  
-  header .stop-btn {
+  .stop-btn {
     background: #999;
     border: none;
     color: white;
@@ -32,11 +28,14 @@ body {
     cursor: pointer;
   }
   
-  main#test-container,
-  #results {
-    max-width: 750px;
+  #test-container, #results {
+    max-width: 800px;
     margin: 3rem auto;
     padding: 0 2rem;
+  }
+  
+  .question h2 {
+    font-size: 22px;
   }
   
   .question p,
