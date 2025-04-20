@@ -96,7 +96,7 @@ const questions = [
     if (!speechSynthesis || !text) return;
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.voice = selectedVoice || null;
-    utterance.rate = 0.8; // NORMAL speed
+    utterance.rate = 0.6;
     speechSynthesis.cancel();
     speechSynthesis.speak(utterance);
   }
