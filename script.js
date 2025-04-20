@@ -45,10 +45,10 @@ const questions = [
       answerIndex: 1
     },
     {
-      passage: "<strong>Birds</strong><br>Birds use their feathered wings to fly.<br>They build nests and lay eggs.<br><br><strong>Bats</strong><br>Bats fly at night to hunt for food.<br>They have fur.<br>Some bats hang in trees.<br><br><em>(Venn Diagram Interaction Not Implemented)</em>",
+      passage: "<strong>Birds</strong><br>Birds use their feathered wings to fly.<br>They build nests and lay eggs.<br><br><strong>Bats</strong><br>Bats fly at night to hunt for food.<br>They have fur.<br>Some bats hang in trees.",
       prompt: "Move each detail to the correct part of the Venn Diagram to show how birds and bats are alike and different.",
-      options: ["lay eggs", "fly", "hang in trees", "have fur"],
-      answerIndex: null
+      type: "venn",
+      options: ["lay eggs", "fly", "hang in trees", "have fur"]
     },
     {
       passage: "<strong>Cat Facts</strong><ul><li>Cats can have short or long fur.</li><li>Cats walk quietly.</li><li>Cats can jump from high places.</li><li>Cats are active at night.</li></ul>",
@@ -73,6 +73,13 @@ const questions = [
   const feedbackList = document.getElementById("question-feedback");
   const progressDisplay = document.getElementById("question-progress");
   
+  function speak(text) {
+    const synth = window.speechSynthesis;
+    if (!synth) return;
+    synth.cancel();
+    synth.speak(new SpeechSynthesisUtterance(text));
+  }
+  
   showQuestion(currentQuestion);
   
   function showQuestion(index) {
@@ -82,7 +89,6 @@ const questions = [
     container.innerHTML = "";
   
     let selectedAnswerIndex = null;
-  
     const section = document.createElement("div");
     section.className = "question";
   
@@ -98,24 +104,71 @@ const questions = [
   
     const prompt = document.createElement("p");
     prompt.innerHTML = `<strong>${q.prompt}</strong>`;
+    const listenBtn = document.createElement("button");
+    listenBtn.className = "listen-button";
+    listenBtn.innerText = "🔊 Listen";
+    listenBtn.onclick = () => speak(q.prompt);
+    prompt.appendChild(listenBtn);
     section.appendChild(prompt);
+  
+    if (q.type === "venn") {
+      const labels = document.createElement("div");
+      labels.className = "venn-labels";
+      q.options.forEach(label => {
+        const item = document.createElement("div");
+        item.className = "venn-label";
+        item.textContent = label;
+        item.draggable = true;
+        item.ondragstart = e => e.dataTransfer.setData("text/plain", label);
+        labels.appendChild(item);
+      });
+  
+      const venn = document.createElement("div");
+      venn.className = "venn-container";
+      ["Only birds", "Both birds and bats", "Only bats"].forEach(zoneName => {
+        const zone = document.createElement("div");
+        zone.className = "venn-zone";
+        zone.dataset.zone = zoneName;
+        zone.ondragover = e => e.preventDefault();
+        zone.ondrop = e => {
+          e.preventDefault();
+          const text = e.dataTransfer.getData("text/plain");
+          const dropped = document.createElement("div");
+          dropped.className = "venn-label";
+          dropped.textContent = text;
+          zone.appendChild(dropped);
+        };
+        zone.innerHTML = `<strong>${zoneName}</strong>`;
+        venn.appendChild(zone);
+      });
+  
+      section.appendChild(labels);
+      section.appendChild(venn);
+  
+      const nextButton = document.createElement("button");
+      nextButton.id = "next-button";
+      nextButton.textContent = "Next";
+      nextButton.onclick = () => handleAnswer(null);
+      section.appendChild(nextButton);
+      container.appendChild(section);
+      progressDisplay.textContent = `${index + 1}/${questions.length}`;
+      return;
+    }
   
     const answerBlock = document.createElement("div");
     answerBlock.className = "answers";
   
-    if (q.answerIndex !== null) {
-      q.options.forEach((opt, i) => {
-        const btn = document.createElement("button");
-        btn.innerHTML = `<span>${i + 1}</span>${opt}`;
-        btn.onclick = () => {
-          document.querySelectorAll(".answers button").forEach(b => b.classList.remove("selected"));
-          btn.classList.add("selected");
-          selectedAnswerIndex = i;
-          document.getElementById("next-button").style.display = "block";
-        };
-        answerBlock.appendChild(btn);
-      });
-    }
+    q.options.forEach((opt, i) => {
+      const btn = document.createElement("button");
+      btn.innerHTML = `<span>${i + 1}</span>${opt}`;
+      btn.onclick = () => {
+        document.querySelectorAll(".answers button").forEach(b => b.classList.remove("selected"));
+        btn.classList.add("selected");
+        selectedAnswerIndex = i;
+        document.getElementById("next-button").style.display = "block";
+      };
+      answerBlock.appendChild(btn);
+    });
   
     section.appendChild(answerBlock);
   
