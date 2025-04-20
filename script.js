@@ -74,7 +74,6 @@ const questions = [
   const progressDisplay = document.getElementById("question-progress");
   
   let selectedVoice = null;
-  const voiceSettings = document.getElementById("voice-settings");
   
   function setupVoice() {
     const voices = speechSynthesis.getVoices();
@@ -117,14 +116,6 @@ const questions = [
     container.classList.remove("hidden");
     results.classList.add("hidden");
     container.innerHTML = "";
-
-    // Show or hide voice speed slider
-    if (index === 5 || index === 6) {
-        voiceSettings.classList.remove("hidden");
-    } else {
-        voiceSettings.classList.add("hidden");
-    }
-  
   
     let selectedAnswerIndex = null;
   
