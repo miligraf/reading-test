@@ -87,7 +87,7 @@ function showQuestion(index) {
 
   q.options.forEach((opt, i) => {
     const btn = document.createElement("button");
-    btn.innerHTML = opt; // allow HTML like <img>
+    btn.innerHTML = `<span>${i + 1}</span>${opt}`;
     btn.onclick = () => handleAnswer(i);
     answerBlock.appendChild(btn);
   });
