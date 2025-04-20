@@ -1,4 +1,4 @@
-let questions = [
+const questions = [
     {
       passage: "Desi has a new puppy. The puppy likes to bark and run fast. The puppy is small, but she will get bigger.",
       prompt: "What word tells how Desi's puppy looks?",
@@ -81,6 +81,8 @@ let questions = [
     results.classList.add("hidden");
     container.innerHTML = "";
   
+    let selectedAnswerIndex = null;
+  
     const section = document.createElement("div");
     section.className = "question";
   
@@ -105,19 +107,25 @@ let questions = [
       q.options.forEach((opt, i) => {
         const btn = document.createElement("button");
         btn.innerHTML = `<span>${i + 1}</span>${opt}`;
-        btn.onclick = () => handleAnswer(i);
+        btn.onclick = () => {
+          document.querySelectorAll(".answers button").forEach(b => b.classList.remove("selected"));
+          btn.classList.add("selected");
+          selectedAnswerIndex = i;
+          document.getElementById("next-button").style.display = "block";
+        };
         answerBlock.appendChild(btn);
       });
-    } else {
-      const skipBtn = document.createElement("button");
-      skipBtn.innerHTML = "Next";
-      skipBtn.onclick = () => handleAnswer(null);
-      answerBlock.appendChild(skipBtn);
     }
   
     section.appendChild(answerBlock);
-    container.appendChild(section);
   
+    const nextButton = document.createElement("button");
+    nextButton.id = "next-button";
+    nextButton.textContent = "Next";
+    nextButton.onclick = () => handleAnswer(selectedAnswerIndex);
+    section.appendChild(nextButton);
+  
+    container.appendChild(section);
     progressDisplay.textContent = `${index + 1}/${questions.length}`;
   }
   
@@ -148,6 +156,7 @@ let questions = [
     const percent = Math.round((correctAnswers / questions.length) * 100);
     scoreSummary.textContent = `You got ${correctAnswers} out of ${questions.length} correct (${percent}%)`;
   
+    feedbackList.innerHTML = "";
     userAnswers.forEach((entry) => {
       const li = document.createElement("li");
       li.textContent = `Q${entry.question}: Your answer: "${entry.selectedAnswer}" — ${entry.correct ? "Correct" : "Wrong (Correct: " + entry.correctAnswer + ")"}`;
