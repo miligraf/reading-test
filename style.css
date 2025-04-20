@@ -142,3 +142,17 @@ body {
     color: #1f73c0;
   }
   
+  #voice-settings {
+    max-width: 800px;
+    margin: 1rem auto 0;
+    padding: 0 2rem;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  #voiceRate {
+    width: 150px;
+  }
+  

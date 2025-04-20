@@ -94,12 +94,14 @@ const questions = [
   
   function speak(text) {
     if (!speechSynthesis || !text) return;
+    const rate = parseFloat(document.getElementById("voiceRate").value) || 1;
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.voice = selectedVoice || null;
-    utterance.rate = 0.8; // NORMAL speed
+    utterance.rate = rate;
     speechSynthesis.cancel();
     speechSynthesis.speak(utterance);
   }
+  
   
   function stripHtml(html) {
     const div = document.createElement("div");
@@ -260,3 +262,6 @@ const questions = [
     location.reload();
   }
   
+  document.getElementById("voiceRate").addEventListener("input", e => {
+    document.getElementById("rateDisplay").textContent = `${e.target.value}x`;
+  });  
