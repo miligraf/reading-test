@@ -73,11 +73,24 @@ const questions = [
   const feedbackList = document.getElementById("question-feedback");
   const progressDisplay = document.getElementById("question-progress");
   
+  let selectedVoice = null;
+  
+  function setupVoice() {
+    const voices = speechSynthesis.getVoices();
+    selectedVoice = voices.find(v =>
+      v.lang.startsWith("en") && v.name.toLowerCase().includes("female")
+    ) || voices.find(v => v.lang.startsWith("en"));
+  }
+  
+  speechSynthesis.onvoiceschanged = setupVoice;
+  
   function speak(text) {
-    const synth = window.speechSynthesis;
-    if (!synth) return;
-    synth.cancel();
-    synth.speak(new SpeechSynthesisUtterance(text));
+    if (!speechSynthesis || !selectedVoice) return;
+    speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.voice = selectedVoice;
+    utterance.rate = 1;
+    speechSynthesis.speak(utterance);
   }
   
   showQuestion(currentQuestion);
@@ -89,6 +102,7 @@ const questions = [
     container.innerHTML = "";
   
     let selectedAnswerIndex = null;
+  
     const section = document.createElement("div");
     section.className = "question";
   
@@ -104,12 +118,11 @@ const questions = [
   
     const prompt = document.createElement("p");
     prompt.innerHTML = `<strong>${q.prompt}</strong>`;
-    const listenBtn = document.createElement("button");
-    listenBtn.className = "listen-button";
-    listenBtn.innerText = "🔊 Listen";
-    listenBtn.onclick = () => speak(q.prompt);
-    prompt.appendChild(listenBtn);
     section.appendChild(prompt);
+  
+    if (index === 5 || index === 6) {
+      speak(`${q.prompt}. ${stripHtml(q.passage)}`);
+    }
   
     if (q.type === "venn") {
       const labels = document.createElement("div");
@@ -133,6 +146,12 @@ const questions = [
         zone.ondrop = e => {
           e.preventDefault();
           const text = e.dataTransfer.getData("text/plain");
+          if (!text) return;
+  
+          // remove from label pool
+          const existing = Array.from(labels.children).find(el => el.textContent === text);
+          if (existing) existing.remove();
+  
           const dropped = document.createElement("div");
           dropped.className = "venn-label";
           dropped.textContent = text;
@@ -180,6 +199,12 @@ const questions = [
   
     container.appendChild(section);
     progressDisplay.textContent = `${index + 1}/${questions.length}`;
+  }
+  
+  function stripHtml(html) {
+    const div = document.createElement("div");
+    div.innerHTML = html;
+    return div.textContent || div.innerText || "";
   }
   
   function handleAnswer(selected) {
