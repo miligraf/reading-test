@@ -83,6 +83,7 @@ const questions = [
     }
   
     selectedVoice = voices.find(v => v.name === "Samantha")
+      || voices.find(v => v.name === "Victoria")
       || voices.find(v => v.lang === "en-US" && /female|zira|aria|jenny/i.test(v.name))
       || voices.find(v => v.lang === "en-US")
       || voices.find(v => v.lang.startsWith("en"));
@@ -94,8 +95,8 @@ const questions = [
   function speak(text) {
     if (!speechSynthesis || !text) return;
     const utterance = new SpeechSynthesisUtterance(text);
-    if (selectedVoice) utterance.voice = selectedVoice;
-    utterance.rate = 1;
+    utterance.voice = selectedVoice || null;
+    utterance.rate = 1; // NORMAL speed
     speechSynthesis.cancel();
     speechSynthesis.speak(utterance);
   }
@@ -133,10 +134,12 @@ const questions = [
     prompt.innerHTML = `<strong>${q.prompt}</strong>`;
     section.appendChild(prompt);
   
+    // Q6 & Q7 auto-speak
     if (index === 5 || index === 6) {
       speak(`${stripHtml(q.prompt)} ${stripHtml(q.passage)}`);
     }
   
+    // VENN DIAGRAM
     if (q.type === "venn") {
       const labels = document.createElement("div");
       labels.className = "venn-labels";
@@ -186,6 +189,7 @@ const questions = [
       return;
     }
   
+    // MULTIPLE CHOICE
     const answerBlock = document.createElement("div");
     answerBlock.className = "answers";
   
@@ -196,19 +200,22 @@ const questions = [
         document.querySelectorAll(".answers button").forEach(b => b.classList.remove("selected"));
         btn.classList.add("selected");
         selectedAnswerIndex = i;
-        document.getElementById("next-button").style.display = "block";
+  
+        let nextBtn = document.getElementById("next-button");
+        if (!nextBtn) {
+          nextBtn = document.createElement("button");
+          nextBtn.id = "next-button";
+          nextBtn.textContent = "Next";
+          nextBtn.onclick = () => handleAnswer(selectedAnswerIndex);
+          section.appendChild(nextBtn);
+        } else {
+          nextBtn.style.display = "block";
+        }
       };
       answerBlock.appendChild(btn);
     });
   
     section.appendChild(answerBlock);
-  
-    const nextButton = document.createElement("button");
-    nextButton.id = "next-button";
-    nextButton.textContent = "Next";
-    nextButton.onclick = () => handleAnswer(selectedAnswerIndex);
-    section.appendChild(nextButton);
-  
     container.appendChild(section);
     progressDisplay.textContent = `${index + 1}/${questions.length}`;
   }
