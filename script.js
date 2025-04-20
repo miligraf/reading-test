@@ -8,9 +8,9 @@ const questionPool = [
         answerIndex: 2
       },
       {
-        passage: "Jamie has a tall giraffe toy. The giraffe has long legs and brown spots. Jamie takes it everywhere.",
-        prompt: "What word tells how the giraffe toy looks?",
-        options: ["legs", "spots", "tall"],
+        passage: "Lena has a pet rabbit. The rabbit has soft white fur and long ears. It hops around the yard every morning.",
+        prompt: "What word tells how Lena's rabbit looks?",
+        options: ["hops", "ears", "soft"],
         answerIndex: 2
       }
     ],
@@ -81,15 +81,15 @@ const questionPool = [
         answerIndex: 2
       },
       {
-        passage: "<strong>Rain</strong><br>Rain gives plants water.<br>Rain keeps the air clean.<br>Rain helps trees grow.<br>We need rain to live.",
+        passage: "<strong>Rain</strong><br>Rain gives animals water to drink.<br>Rain helps crops grow on farms.<br>Rain fills rivers and lakes.",
         prompt: "Pick the sentence that tells what the author thinks about rain.",
         options: [
-          "Rain is wet.",
-          "Rain helps plants.",
-          "We need rain to live.",
-          "Rain falls from the sky."
+          "Rain is loud.",
+          "Rain is important.",
+          "Rain falls fast.",
+          "Rain is cold."
         ],
-        answerIndex: 2
+        answerIndex: 1
       }
     ],
   
@@ -102,10 +102,10 @@ const questionPool = [
         answerIndex: 1
       },
       {
-        passage: "<pre>I like the moon,\nI like it bright,\nIt shines on trees,\nIt shines at night.</pre>",
+        passage: "<pre>I saw a red bird in a tree,\nIt sang a little song to me.</pre>",
         prompt: "Pick the number of stanzas.",
         options: ["1", "2", "3", "4"],
-        answerIndex: 1
+        answerIndex: 0
       }
     ],
   
